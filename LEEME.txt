@@ -1,6 +1,22 @@
 SEGUIMIENTO DE VENTAS - techmarleys.com
 =======================================
 
+AHORA FUNCIONA EN LA NUBE (no necesita la PC encendida)
+-------------------------------------------------------
+App / dashboard:  https://anthonycasorla2-sudo.github.io/techmarleys-seguimiento/
+Repositorio:      https://github.com/anthonycasorla2-sudo/techmarleys-seguimiento
+
+- GitHub revisa la tienda cada hora de 10 am a 8 pm (hora de Panamá) con el
+  archivo .github/workflows/seguimiento.yml y el script nube.py.
+- El historial se guarda en datos/techmarleys.sql dentro del repositorio.
+- Para instalarla en el celular: abre el enlace en Chrome > menú (3 puntos)
+  > "Agregar a pantalla principal" / "Instalar app".
+- Revisión manual: en el repositorio > Actions > "Seguimiento TechMarleys"
+  > "Run workflow".
+- La tarea programada de la PC quedó DESACTIVADA para no tener dos
+  historiales. Lo de abajo describe la versión de PC, que sigue aquí por si
+  algún día la quieres volver a usar.
+
 Qué hace
 --------
 Cada hora, de 10:00 am a 8:00 pm, descarga TODOS los productos de la web
