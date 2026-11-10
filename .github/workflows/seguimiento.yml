@@ -1,0 +1,55 @@
+name: Seguimiento TechMarleys
+
+on:
+  schedule:
+    # Hora de Panamá = UTC-5. Revisa a las :07 de cada hora, de 10 am a 8 pm.
+    - cron: "7 15-23 * * *"
+    - cron: "7 0,1 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: seguimiento
+  cancel-in-progress: false
+
+env:
+  TZ: America/Panama
+
+jobs:
+  capturar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.publicar.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - run: pip install -r requirements.txt
+
+      - name: Revisar la tienda
+        run: python nube.py ${{ github.event_name == 'schedule' && '--programado' || '' }}
+
+      - name: Guardar el historial
+        run: |
+          git config user.name "seguimiento-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add datos/
+          git diff --cached --quiet || git commit -m "Captura $(date '+%Y-%m-%d %H:%M')"
+          git push
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: sitio
+
+      - id: publicar
+        uses: actions/deploy-pages@v4

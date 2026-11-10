@@ -1,0 +1,56 @@
+SEGUIMIENTO DE VENTAS - techmarleys.com
+=======================================
+
+Qué hace
+--------
+Cada hora, de 10:00 am a 8:00 pm, descarga TODOS los productos de la web
+(con stock y precio) y los compara con la hora anterior:
+
+  - Si el stock baja        -> VENTA (unidades x precio = monto)
+  - Si llega a 0            -> VENTA (AGOTADO)
+  - Si el stock sube        -> INGRESO de mercancía
+  - Producto nuevo          -> NUEVO
+  - Cambio de precio        -> CAMBIO DE PRECIO
+  - Desaparece de la web    -> RETIRADO (posible venta)
+
+Dónde ver los resultados
+------------------------
+dashboard.html  (doble clic para abrirlo en el navegador)
+
+  Panel visual con las fotos de los productos: resumen con lo vendido,
+  gráfico de ventas por día, lo más vendido (podio), actividad hora por
+  hora, productos que se agotaron, mercancía que llegó, inventario
+  completo con filtros, ventas por categoría / marca / sucursal y la
+  ficha de cada producto con su historial. Arriba se elige el período
+  (hoy, ayer, 7 días, 30 días, este mes, un mes completo o todo).
+  Se recarga solo cada 10 minutos; tiene modo claro y oscuro.
+
+reportes\reporte_AAAA-MM.xlsx   (Excel, uno por mes, se actualiza cada hora)
+
+  Resumen, Ventas por día (con gráfico), Ventas por producto,
+  Ventas por categoría, Ventas por marca, Detalle de ventas, Agotados,
+  Mercancía ingresada, Cambios de precio, Retirados de la web,
+  Inventario actual.
+
+Si el Excel está abierto a la hora de la captura no se puede actualizar;
+los datos no se pierden y se actualiza en la siguiente hora.
+
+Archivos
+--------
+rastreador.py          toma la captura (lo ejecuta la tarea programada)
+dashboard.html         el dashboard (no necesita instalar nada)
+dashboard.py           genera dashboard_datos.js, los datos del dashboard
+reporte.py             arma el Excel  (python reporte.py 2026-11 para otro mes)
+actualizar_ahora.bat   doble clic: captura ahora y abre el dashboard
+programar_tarea.ps1    crea/actualiza la tarea "TechMarleys Seguimiento"
+techmarleys.db         base de datos con todo el historial (NO borrar)
+rastreador.log         registro de cada captura
+
+Importante
+----------
+- La computadora tiene que estar encendida (y la sesión iniciada) para que
+  se tomen las capturas. Lo que se venda de 8 pm a 10 am aparece en la
+  captura de las 10 am.
+- Las ventas son estimadas: una bajada de stock puede ser una venta, una
+  reserva o un traslado; una subida puede ser una reserva cancelada.
+- Si mueves esta carpeta, ejecuta programar_tarea.ps1 otra vez.

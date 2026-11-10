@@ -1,0 +1,11 @@
+# Archivos de la versión en la PC (la nube usa datos/techmarleys.sql)
+techmarleys.db
+nube.db
+rastreador.log
+dashboard_datos.js
+reportes/
+reportes_nube/
+sitio/
+lib/
+__pycache__/
+*.tmp
