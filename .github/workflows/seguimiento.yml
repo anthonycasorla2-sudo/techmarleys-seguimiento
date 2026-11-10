@@ -2,9 +2,9 @@ name: Seguimiento TechMarleys
 
 on:
   schedule:
-    # Hora de Panamá = UTC-5. Revisa a las :07 de cada hora, de 10 am a 8 pm.
-    - cron: "7 15-23 * * *"
-    - cron: "7 0,1 * * *"
+    # Hora de Panamá = UTC-5. Revisa a las :17 de cada hora, de 10 am a 8 pm.
+    - cron: "17 15-23 * * *"
+    - cron: "17 0,1 * * *"
   workflow_dispatch:
 
 permissions:
