@@ -8,6 +8,11 @@ Repositorio:      https://github.com/anthonycasorla2-sudo/techmarleys-seguimient
 
 - GitHub revisa la tienda cada hora de 10 am a 8 pm (hora de Panamá) con el
   archivo .github/workflows/seguimiento.yml y el script nube.py.
+- Como el horario automático de GitHub se atrasa o se salta, cada revisión
+  espera hasta la siguiente hora a los :07 y lanza ella misma la siguiente
+  (proxima.py calcula cuánto esperar). El horario de GitHub solo arranca la
+  cadena en la mañana; si un día la app no se actualiza, lanza una revisión
+  manual (abajo) y la cadena vuelve a arrancar.
 - El historial se guarda en datos/techmarleys.sql dentro del repositorio.
 - Para instalarla en el celular: abre el enlace en Chrome > menú (3 puntos)
   > "Agregar a pantalla principal" / "Instalar app".
