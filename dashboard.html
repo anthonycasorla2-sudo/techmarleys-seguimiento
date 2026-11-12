@@ -578,7 +578,9 @@ function pintarCabecera(r, m) {
   else {
     const min = (Date.now() - new Date(u.fecha_hora.replace(" ", "T"))) / 60000;
     const ahora = new Date(), h = ahora.getHours();
-    const prox = h < 10 ? "hoy 10 am" : h >= 20 ? "mañana 10 am" : fmtHora(h + 1);
+    const enPunto = hh => `${hh % 12 || 12}:07 ${hh < 12 ? "am" : "pm"}`;
+    const sig = ahora.getMinutes() < 7 ? h : h + 1;
+    const prox = sig < 10 ? "hoy 10:07 am" : sig > 20 ? "mañana 10:07 am" : enPunto(sig);
     estado = !u.ok ? `<span class="dot err"></span>La última revisión falló · ${hace(u.fecha_hora)}`
       : `<span class="dot ${min < 90 ? "live" : "warn"}"></span>Revisado ${hace(u.fecha_hora)} · próxima ${prox}`;
   }

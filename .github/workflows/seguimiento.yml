@@ -1,16 +1,27 @@
 name: Seguimiento TechMarleys
 
+# Cómo se mantiene el horario (hora de Panamá, UTC-5):
+# GitHub no respeta bien el horario "schedule" (lo atrasa horas o lo salta), así
+# que solo se usa para arrancar. Cada revisión termina esperando hasta la
+# siguiente hora a los :07 y lanza ella misma la siguiente revisión, en cadena,
+# de 10 am a 8 pm. Si la cadena se cortara, el siguiente "schedule" la reinicia.
+
 on:
   schedule:
-    # Hora de Panamá = UTC-5. Revisa a las :17 de cada hora, de 10 am a 8 pm.
-    - cron: "17 15-23 * * *"
-    - cron: "17 0,1 * * *"
+    - cron: "17 12-23 * * *"   # 7 am a 6 pm
+    - cron: "17 0,1 * * *"     # 7 pm y 8 pm
   workflow_dispatch:
+    inputs:
+      encadenada:
+        description: "La lanzó la revisión anterior (respeta el horario)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
   pages: write
   id-token: write
+  actions: write
 
 concurrency:
   group: seguimiento
@@ -22,6 +33,7 @@ env:
 jobs:
   capturar:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     environment:
       name: github-pages
       url: ${{ steps.publicar.outputs.page_url }}
@@ -35,7 +47,7 @@ jobs:
       - run: pip install -r requirements.txt
 
       - name: Revisar la tienda
-        run: python nube.py ${{ github.event_name == 'schedule' && '--programado' || '' }}
+        run: python nube.py ${{ (github.event_name == 'schedule' || inputs.encadenada) && '--programado' || '' }}
 
       - name: Guardar el historial
         run: |
@@ -43,6 +55,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add datos/
           git diff --cached --quiet || git commit -m "Captura $(date '+%Y-%m-%d %H:%M')"
+          git pull --rebase -q
           git push
 
       - uses: actions/configure-pages@v5
@@ -53,3 +66,28 @@ jobs:
 
       - id: publicar
         uses: actions/deploy-pages@v4
+
+  siguiente:
+    needs: capturar
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 200
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Esperar y lanzar la siguiente revisión
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          espera=$(python3 proxima.py)
+          if [ "$espera" -lt 0 ]; then
+            echo "No hay más revisiones por hoy; mañana arranca con el horario de GitHub."
+            exit 0
+          fi
+          echo "Siguiente revisión en $((espera / 60)) minutos"
+          sleep "$espera"
+          for intento in 1 2 3; do
+            gh workflow run seguimiento.yml --ref main -f encadenada=true && exit 0
+            sleep 30
+          done
+          exit 1
