@@ -68,6 +68,7 @@ INSERT INTO "capturas" VALUES(61,'2026-11-18 20:07:28',0,'Expecting value: line 
 INSERT INTO "capturas" VALUES(62,'2026-11-19 15:34:12',0,'Expecting value: line 1 column 1 (char 0)',NULL,NULL,NULL);
 INSERT INTO "capturas" VALUES(63,'2026-11-19 16:07:15',0,'la web devolvió 162 productos (antes había 345); se ignora esta captura',NULL,NULL,NULL);
 INSERT INTO "capturas" VALUES(64,'2026-11-19 17:07:19',0,'la web devolvió 160 productos (antes había 345); se ignora esta captura',NULL,NULL,NULL);
+INSERT INTO "capturas" VALUES(65,'2026-11-19 18:07:14',0,'la web devolvió 160 productos (antes había 345); se ignora esta captura',NULL,NULL,NULL);
 CREATE TABLE eventos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     captura_id INTEGER, fecha_hora TEXT, fecha TEXT, hora TEXT,
@@ -23278,6 +23279,6 @@ INSERT INTO "stock_historial" VALUES(60,504,0,1200.0);
 CREATE INDEX ix_eventos_fecha ON eventos(fecha);
 CREATE INDEX ix_eventos_tipo ON eventos(tipo);
 DELETE FROM "sqlite_sequence";
-INSERT INTO "sqlite_sequence" VALUES('capturas',64);
+INSERT INTO "sqlite_sequence" VALUES('capturas',65);
 INSERT INTO "sqlite_sequence" VALUES('eventos',160);
 COMMIT;
