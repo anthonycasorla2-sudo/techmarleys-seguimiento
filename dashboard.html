@@ -572,17 +572,22 @@ function stockBadge(p) {
 
 /* ---------- Cabecera ---------- */
 function pintarCabecera(r, m) {
-  const u = D.ultima_captura;
+  // El estado se basa en la última revisión EXITOSA, no en el último intento:
+  // una revisión que falla por un problema pasajero de la web (p. ej. un
+  // timeout) no debe pintar la app de rojo si el seguimiento sigue al día.
+  const ultimoOk = D.capturas.length ? D.capturas[D.capturas.length - 1][0] : null;
   let estado;
-  if (!u) estado = `<span class="dot warn"></span>Sin capturas todavía`;
+  if (!ultimoOk) estado = `<span class="dot warn"></span>Sin capturas todavía`;
   else {
-    const min = (Date.now() - new Date(u.fecha_hora.replace(" ", "T"))) / 60000;
+    const min = (Date.now() - new Date(ultimoOk.replace(" ", "T"))) / 60000;
     const ahora = new Date(), h = ahora.getHours();
     const enPunto = hh => `${hh % 12 || 12}:07 ${hh < 12 ? "am" : "pm"}`;
     const sig = ahora.getMinutes() < 7 ? h : h + 1;
     const prox = sig < 10 ? "hoy 10:07 am" : sig > 20 ? "mañana 10:07 am" : enPunto(sig);
-    estado = !u.ok ? `<span class="dot err"></span>La última revisión falló · ${hace(u.fecha_hora)}`
-      : `<span class="dot ${min < 90 ? "live" : "warn"}"></span>Revisado ${hace(u.fecha_hora)} · próxima ${prox}`;
+    // Dentro del horario (10 am–8 pm) debería haber una revisión reciente;
+    // si la última buena tiene más de ~75 min, algo va atrasado (amarillo).
+    const atrasado = h >= 10 && h <= 20 && min > 75;
+    estado = `<span class="dot ${atrasado ? "warn" : "live"}"></span>Actualizado ${hace(ultimoOk)} · próxima ${prox}`;
   }
   $("#estado").innerHTML = estado;
   const hoy = hoyISO(), hasta = r.hasta > hoy ? hoy : r.hasta;
