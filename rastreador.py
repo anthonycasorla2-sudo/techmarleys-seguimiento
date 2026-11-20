@@ -148,11 +148,26 @@ def capturar():
         productos = descargar_catalogo()
         previos = {r["id"]: dict(r) for r in con.execute("SELECT * FROM productos")}
         activos_previos = sum(1 for r in previos.values() if r["activo"])
-        # Si la web devuelve muy pocos productos de golpe, es una falla de la
-        # página y no queremos marcar cientos de productos como "retirados".
-        if not productos or (activos_previos and len(productos) < activos_previos * 0.5):
-            raise RuntimeError(
-                f"la web devolvió {len(productos)} productos (antes había {activos_previos}); se ignora esta captura")
+        n = len(productos)
+        if not productos:
+            raise RuntimeError("la web no devolvió ningún producto; se ignora esta captura")
+        # Una caída brusca (más de la mitad) puede ser una falla temporal de la
+        # web, o que la tienda de verdad recortó su catálogo. Para no marcar
+        # cientos de productos como "retirados" por un error pasajero, pero
+        # tampoco quedarnos congelados si el recorte es real, se exige que la
+        # caída se confirme en dos revisiones seguidas con un conteo parecido.
+        if activos_previos and n < activos_previos * 0.5:
+            ult = con.execute("SELECT total_productos FROM capturas ORDER BY id DESC LIMIT 1").fetchone()
+            previo_bajo = ult["total_productos"] if ult else None
+            if previo_bajo is None or abs(n - previo_bajo) > max(10, n * 0.25):
+                con.execute("INSERT INTO capturas (fecha_hora, ok, error, total_productos) VALUES (?, 0, ?, ?)",
+                            (marca_tiempo, f"la web devolvió {n} productos (antes había {activos_previos}); "
+                             "se espera a confirmarlo en la próxima revisión", n))
+                con.commit()
+                con.close()
+                log.warning("Caída brusca sin confirmar: %d vs %d productos; se ignora esta vez", n, activos_previos)
+                return False
+            log.info("Caída de catálogo confirmada (%d productos, antes %d); se acepta", n, activos_previos)
     except Exception as e:
         con.execute("INSERT INTO capturas (fecha_hora, ok, error) VALUES (?, 0, ?)", (marca_tiempo, str(e)))
         con.commit()
