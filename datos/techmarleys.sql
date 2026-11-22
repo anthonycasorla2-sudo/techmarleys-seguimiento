@@ -89,6 +89,7 @@ INSERT INTO "capturas" VALUES(82,'2026-11-21 17:07:14',1,NULL,163,478,85641.87);
 INSERT INTO "capturas" VALUES(83,'2026-11-21 18:07:17',1,NULL,163,478,85641.87);
 INSERT INTO "capturas" VALUES(84,'2026-11-21 18:48:49',1,NULL,163,478,85641.87);
 INSERT INTO "capturas" VALUES(85,'2026-11-21 19:07:18',1,NULL,163,478,85641.87);
+INSERT INTO "capturas" VALUES(86,'2026-11-21 20:07:18',0,'<urlopen error timed out>',NULL,NULL,NULL);
 CREATE TABLE eventos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     captura_id INTEGER, fecha_hora TEXT, fecha TEXT, hora TEXT,
@@ -26267,6 +26268,6 @@ INSERT INTO "stock_historial" VALUES(85,507,1,70.0);
 CREATE INDEX ix_eventos_fecha ON eventos(fecha);
 CREATE INDEX ix_eventos_tipo ON eventos(tipo);
 DELETE FROM "sqlite_sequence";
-INSERT INTO "sqlite_sequence" VALUES('capturas',85);
+INSERT INTO "sqlite_sequence" VALUES('capturas',86);
 INSERT INTO "sqlite_sequence" VALUES('eventos',380);
 COMMIT;
